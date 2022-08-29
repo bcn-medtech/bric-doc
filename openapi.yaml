@@ -1,0 +1,149 @@
+
+openapi: 3.0.3
+info:
+  title: AI Results Service
+  description: |-
+    AI results service is in charge of running complex models and algorithms to extract insights from patient images.
+  version: 0.0.1
+tags:
+  - name: Analysis
+    description: The results of running a certain algorithm/model.
+  - name: Models
+    description: The available models and algorithms.
+paths:
+  /models:
+    get:
+      tags:
+        - Models
+      summary: Get all available models/algorithms.
+      description: Retrieves a list of models which can be run as part of this service.
+      operationId: getModels
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Models'
+  /analysis:
+    post:
+      tags:
+        - Analysis
+      summary: Request a new AI analysis
+      description: Trigger the execution of an algorithm with some inputs.
+      operationId: postAnalysis
+      requestBody:
+        description: Send the algorithm you want to run, as well as its inputs.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostAnalysisBodyRequest'
+        required: true
+      responses:
+        '202':
+          description: Accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Analysis'
+        '400':
+          description: Invalid schema, model does not exist.
+  /analysis/{id}:
+    delete:
+      tags:
+        - Analysis
+      summary: Cancels or removes an AI analysis
+      description: If the AI analysis was still pending, it cancels it. If the AI analysis had completed, it removes it.
+      operationId: deleteAnalysis
+      parameters:
+        - name: id
+          in: path
+          description: 'id of the Analysis'
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Cancelled or removed.
+        '404':
+          description: Invalid id.
+    get:
+      tags:
+        - Analysis
+      summary: Get the results of an AI analysis
+      description: Retrieves the result or progress of an AI analysis.
+      operationId: getAnalysis
+      parameters:
+        - name: id
+          in: path
+          description: 'id of the Analysis'
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Exists.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Analysis'
+        '404':
+          description: Invalid id.
+  
+components:
+  schemas:
+    Model:
+      required:
+        - id
+        - description
+      type: object
+      properties:
+        id:
+          type: string
+          example: cancer-tumor-segmentation-3
+        description:
+          type: string
+          example: Lung nodule detection.
+    Models:
+      required:
+        - models
+      type: object
+      properties:
+        models:
+          type: array
+          items: 
+            $ref: '#/components/schemas/Model'
+    PostAnalysisBodyRequest:
+      required:
+        - modelId
+      type: object
+      properties:
+        modelId:
+          type: string
+          example: cancer-tumor-segmentation-3
+        parameters:
+          type: object
+          example: {}
+    Analysis:
+      required:
+        - id
+        - modelId
+        - status
+      type: object
+      properties:
+        id:
+          type: string
+          example: 39b30df5-2b40-4396-8452-9b456aaadd48
+        modelId:
+          type: string
+          example: cancer-tumor-segmentation-3
+        status:
+          type: string
+          example: done
+          enum: [done, enqueued]
+        parameters:
+          type: object
+          example: {}
+        results:
+          type: object
+          example: {}
