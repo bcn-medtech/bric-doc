@@ -1,8 +1,8 @@
 openapi: 3.0.3
 info:
-  title: AI Results Service
+  title: Analysis Service
   description: |-
-    AI results service is in charge of running complex models and algorithms to extract insights from patient images.
+    The analysis service is in charge of running ML models and algorithms to extract insights from patient images.
   version: 0.0.1
 tags:
   - name: Analysis
