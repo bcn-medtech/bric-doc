@@ -9,6 +9,15 @@ tags:
     description: The results of running a certain algorithm/model.
   - name: Models
     description: The available models and algorithms.
+servers:
+  - url: https://prod.bric-lungs.com/api/
+    description: Production server
+  - url: https://beta.bric-lungs.com/api/
+    description: Staging server
+  - url: https://<devId>.dev.bric-lungs.com/api/
+    description: Development server
+security:
+   - ApiKey: []
 paths:
   /models:
     get:
@@ -174,3 +183,9 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ImagingTest'
+  securitySchemes:
+    ApiKey:
+       type: apiKey
+       name: Authorization
+       in: header
+       description: 'Cognito ID token.' 
