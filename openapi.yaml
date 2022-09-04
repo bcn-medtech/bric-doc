@@ -1,4 +1,3 @@
-
 openapi: 3.0.3
 info:
   title: AI Results Service
@@ -37,7 +36,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PostAnalysisBodyRequest'
+              $ref: '#/components/schemas/PostAnalysisBody'
         required: true
       responses:
         '202':
@@ -48,6 +47,12 @@ paths:
                 $ref: '#/components/schemas/Analysis'
         '400':
           description: Invalid schema, model does not exist.
+        '401':
+          description: Missing or invalid Authorization header.
+        '403':
+          description: Analysis is not owned by your center or imaging test does not belong to your center.
+        '429':
+          description: Quota limit exceeded.
   /analysis/{id}:
     delete:
       tags:
@@ -67,6 +72,10 @@ paths:
           description: Cancelled or removed.
         '404':
           description: Invalid id.
+        '401':
+          description: Missing or invalid Authorization header.
+        '403':
+          description: Analysis is not owned by your center.
     get:
       tags:
         - Analysis
@@ -89,6 +98,8 @@ paths:
                 $ref: '#/components/schemas/Analysis'
         '404':
           description: Invalid id.
+        '403':
+          description: Analysis is not owned by your center.
   
 components:
   schemas:
@@ -100,7 +111,7 @@ components:
       properties:
         id:
           type: string
-          example: cancer-tumor-segmentation-3
+          example: 31bd5132-c683-4e66-ac7c-62c8f2dd5bc6
         description:
           type: string
           example: Lung nodule detection.
@@ -113,17 +124,29 @@ components:
           type: array
           items: 
             $ref: '#/components/schemas/Model'
-    PostAnalysisBodyRequest:
+    PostAnalysisBody:
       required:
         - modelId
       type: object
       properties:
         modelId:
           type: string
-          example: cancer-tumor-segmentation-3
+          example: 31bd5132-c683-4e66-ac7c-62c8f2dd5bc6
         parameters:
           type: object
           example: {}
+        imagingTests:
+          type: array
+          items:
+            $ref: '#/components/schemas/ImagingTest'
+    ImagingTest:
+      required:
+        - id
+      type: object
+      properties:
+        id:
+          type: string
+          example: 024cedd9-06bd-40c1-a6f6-ed1f7078da01
     Analysis:
       required:
         - id
@@ -136,14 +159,18 @@ components:
           example: 39b30df5-2b40-4396-8452-9b456aaadd48
         modelId:
           type: string
-          example: cancer-tumor-segmentation-3
+          example: 31bd5132-c683-4e66-ac7c-62c8f2dd5bc6
         status:
           type: string
           example: done
-          enum: [done, enqueued]
+          enum: [done, enqueued, error, invalid]
         parameters:
           type: object
           example: {}
         results:
           type: object
           example: {}
+        imagingTests:
+          type: array
+          items:
+            $ref: '#/components/schemas/ImagingTest'
