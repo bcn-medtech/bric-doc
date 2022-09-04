@@ -172,7 +172,7 @@ components:
         status:
           type: string
           example: done
-          enum: [done, enqueued, error, invalid]
+          enum: [done, enqueued, analysis-error, internal-error, invalid]
         parameters:
           type: object
           example: {}
