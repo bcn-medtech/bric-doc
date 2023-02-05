@@ -120,7 +120,7 @@ components:
       properties:
         id:
           type: string
-          example: 31bd5132-c683-4e66-ac7c-62c8f2dd5bc6
+          example: bric-core
         description:
           type: string
           example: Lung nodule detection.
